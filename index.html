@@ -1,0 +1,165 @@
+<html><head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Smart Irrigation</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
+</head><body><center>
+  <h1>Smart Irrigation</h1>
+  <h2>Water Tank</h2>
+  <div class="container">
+    <div class="row row-cols-1 row-cols-md-4 g-4">
+      <div class="col">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Irrigate</h5>
+            <p class="card-text">
+              <button class='btn btn-primary' onclick="disableButton(this);ajax('irrigate');">Manual Start</button>
+              <hr class="my-4">
+              <label for="irrigate_1" class="form-label">Schedule 1</label>
+              <div class="input-group mb-3">
+                <input type="time" class="form-control" id="irrigate_1" value="00:00" disabled>
+                <button class="btn btn-outline-secondary" type="button" onclick="toggleInput(this);">Enable</button>
+              </div>
+              <label for="irrigate_2" class="form-label">Schedule 2</label>
+              <div class="input-group mb-3">
+                <input type="time" class="form-control" id="irrigate_2" value="00:00" disabled>
+                <button class="btn btn-outline-secondary" type="button" onclick="toggleInput(this);">Enable</button>
+              </div>
+              <button class='btn btn-outline-primary' onclick="schedule_this('irrigate')">Save</button>
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Fertilize</h5>
+            <p class="card-text">
+              <button class='btn btn-primary' onclick="disableButton(this, );ajax('fertilize');">Manual Start</button>
+              <hr class="my-4">
+              <label for="fertilize_1" class="form-label">Schedule 1</label>
+              <div class="input-group mb-3">
+                <input type="time" class="form-control" id="fertilize_1" value="00:00" disabled>
+                <button class="btn btn-outline-secondary" type="button" onclick="toggleInput(this);">Enable</button>
+              </div>
+              <label for="fertilize_2" class="form-label">Schedule 2</label>
+              <div class="input-group mb-3">
+                <input type="time" class="form-control" id="fertilize_2" value="00:00" disabled>
+                <button class="btn btn-outline-secondary" type="button" onclick="toggleInput(this);">Enable</button>
+              </div>
+              <button class='btn btn-outline-primary' onclick="schedule_this('fertilize')">Save</button>
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Spray</h5>
+            <p class="card-text">
+              <button class='btn btn-primary' onclick="disableButton(this, );ajax('spray');">Manual Start</button>
+              
+              <hr class="my-4">
+              <label for="spray_1" class="form-label">Schedule 1</label>
+              <div class="input-group mb-3">
+                <input type="time" class="form-control" id="spray_1" value="00:00" disabled>
+                <button class="btn btn-outline-secondary" type="button" onclick="toggleInput(this);">Enable</button>
+              </div>
+              <label for="spray_2" class="form-label">Schedule 2</label>
+              <div class="input-group mb-3">
+                <input type="time" class="form-control" id="spray_2" value="00:00" disabled>
+                <button class="btn btn-outline-secondary" type="button" onclick="toggleInput(this);">Enable</button>
+              </div>
+              <button class='btn btn-outline-primary' onclick="schedule_this('spray')">Save</button>
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Fogging</h5>
+            <p class="card-text">
+              <button class='btn btn-primary' onclick="disableButton(this, );ajax('fogging');">Manual Start</button>
+
+              <hr class="my-4">
+              <label for="fogging_1" class="form-label">Schedule 1</label>
+              <div class="input-group mb-3">
+                <input type="time" class="form-control" id="fogging_1" value="00:00" disabled>
+                <button class="btn btn-outline-secondary" type="button" onclick="toggleInput(this);">Enable</button>
+              </div>
+              <label for="fogging_2" class="form-label">Schedule 2</label>
+              <div class="input-group mb-3">
+                <input type="time" class="form-control" id="fogging_2" value="00:00" disabled>
+                <button class="btn btn-outline-secondary" type="button" onclick="toggleInput(this);">Enable</button>
+              </div>
+              <button class='btn btn-outline-primary' onclick="schedule_this('fogging')">Save</button>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script type="text/javascript">
+    function schedule_this(text){
+      // console.log(text+"_1");
+      const sched_1 = document.getElementById(text+"_1");
+      const sched_2 = document.getElementById(text+"_2");
+      // const inputValue = sched_1.value;
+      const schedules = [];
+      if(sched_1.enabled){
+        schedules[text+"_1"]=sched_1.value;
+      }
+      if(sched_2.enabled){
+        schedules[text+"_2"]=sched_2.value;
+      }
+      console.log(schedules);
+      json_schedules = JSON.stringify(schedules);
+      const xhr = new XMLHttpRequest();
+      xhr.open("POST", "schedules");
+      xhr.setRequestHeader("Content-type", "application/json");
+      xhr.onload = function() {
+        if (xhr.status === 200) {
+          console.log("POST request successful!");
+        }
+      };
+      xhr.send(json_schedules);
+    }
+      function toggleInput(button) {
+        var input = button.previousElementSibling;
+        if (input.disabled) {
+          input.disabled = false;
+          button.textContent = 'Disable';
+        } else {
+          input.disabled = true;
+          button.textContent = 'Enable';
+        }
+      }
+      function ajax(link){
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            console.log(this.responseText);
+          }
+        };
+        xhttp.open("GET", link, true);
+        xhttp.send();
+      }
+      function disableButton(button, duration) {
+        var temp_btn = button.innerHTML;
+        var count = duration/1000;
+        button.disabled = true;
+        button.classList.add("disabled");
+        button.innerHTML = count;
+        var timer = setInterval(function() {
+          count--;
+          button.innerHTML = count;
+          if (count == 0) {
+            button.disabled = false;
+            button.classList.remove("disabled");
+            button.innerHTML = temp_btn;
+            clearInterval(timer);
+          }
+        }, 1000);
+      }
+    </script></center>
+</body></html>
